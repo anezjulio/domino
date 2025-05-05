@@ -5,8 +5,9 @@ using UnityEngine.Rendering;
 
 public class BoardGenerator : MonoBehaviour
 {
-    private List<Player> players = new();
-    private List<Tile> tiles = new();
+    public List<Player> players = new();
+    public List<Tile> tiles = new();
+    public List<GameObject> gameObjectsTiles = new();
     public GameObject tilePrefab;
     public int limitOfTiles = 28;
     private List<Vector3> availableSpawnPositionsForTiles = new List<Vector3>();
@@ -22,6 +23,8 @@ public class BoardGenerator : MonoBehaviour
         SetAvailableSpawnPositionsForTiles();
 
         CreateTileOnPositions();
+
+        ShuffleTilePositions();
 
         // Aquí colocamos las fichas de los jugadores
         for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
@@ -183,10 +186,38 @@ public class BoardGenerator : MonoBehaviour
 
                 // Añadir a la lista de tiles
                 tiles.Add(tileComponent);
+                gameObjectsTiles.Add(tileObject);
 
                 tileIndex++;
             }
         }
+
     }
+
+    public void ShuffleTilePositions()
+    {
+        // Crear una lista con las posiciones actuales
+        List<Vector3> originalPositions = new List<Vector3>();
+        foreach (var tile in gameObjectsTiles)
+        {
+            originalPositions.Add(tile.transform.position);
+        }
+
+        // Barajar la lista de posiciones
+        for (int i = 0; i < originalPositions.Count; i++)
+        {
+            int randomIndex = Random.Range(i, originalPositions.Count);
+            Vector3 temp = originalPositions[i];
+            originalPositions[i] = originalPositions[randomIndex];
+            originalPositions[randomIndex] = temp;
+        }
+
+        // Asignar las nuevas posiciones a los GameObjects
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            tiles[i].transform.position = originalPositions[i];
+        }
+    }
+
 
 }

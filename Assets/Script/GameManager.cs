@@ -19,25 +19,22 @@ public class GameManager : MonoBehaviour
     {
         CreatePlayersAndCameras();
         SetActiveCamera(currentPlayerIndex);
-
         CreateScoreBoard(players);
-
         boardManager = CreateBoard();
         boardGenerator = boardManager.GetComponent<BoardGenerator>();
         boardGenerator.GenerateTiles();
-
         //startNewMatch();
 
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
+        if (Input.GetKeyDown(KeyCode.I))
         {
             ChangeCamera(-1);  // Cambiar a la cámara de la izquierda
         }
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             ChangeCamera(1);  // Cambiar a la cámara de la derecha
         }
