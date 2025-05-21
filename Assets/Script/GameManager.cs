@@ -24,7 +24,6 @@ public class GameManager : MonoBehaviour
         boardGenerator = boardManager.GetComponent<BoardGenerator>();
         boardGenerator.GenerateTiles();
         //startNewMatch();
-
     }
 
     void Update()
@@ -81,8 +80,8 @@ public class GameManager : MonoBehaviour
 
     private void CreatePlayersAndCameras()
     {
-        float distanceFromCenter = 3f;
-        float HeighFromCenter = 2.5f;
+        float distanceFromCenter = 4f;
+        float HeighFromCenter = 4.5f;
 
         Vector3 center = Vector3.zero;
         Vector3[] positions = new Vector3[]

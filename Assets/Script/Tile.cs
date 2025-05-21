@@ -3,17 +3,14 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public int valueA;
-    public int valueB;
-
     public TextMeshPro textMeshA;
     public TextMeshPro textMeshB;
 
+    public TileData tileData;
 
-    public void SetValues(int leftValue, int rightValue)
+    public void SetValues(int valueA, int valueB)
     {
-        valueA = leftValue;
-        valueB = rightValue;
+        tileData = new(valueA, valueB);
 
         if (textMeshA == null)
         {
@@ -29,10 +26,10 @@ public class Tile : MonoBehaviour
     private void UpdateText()
     {
         if (textMeshA != null)
-            textMeshA.text = valueA.ToString();
+            textMeshA.text = tileData.valueA.ToString();
 
         if (textMeshB != null)
-            textMeshB.text = valueB.ToString();
+            textMeshB.text = tileData.valueB.ToString();
     }
 
 }

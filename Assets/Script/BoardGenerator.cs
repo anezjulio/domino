@@ -7,7 +7,7 @@ public class BoardGenerator : MonoBehaviour
 {
     public List<Player> players = new();
     public List<Tile> tiles = new();
-    public List<GameObject> gameObjectsTiles = new();
+    public List<TileData> tileDataList = new();
     public GameObject tilePrefab;
     public int limitOfTiles = 28;
     private List<Vector3> availableSpawnPositionsForTiles = new List<Vector3>();
@@ -22,14 +22,14 @@ public class BoardGenerator : MonoBehaviour
     {
         SetAvailableSpawnPositionsForTiles();
 
-        CreateTileOnPositions();
-
-        ShuffleTilePositions();
+        CreateTiles();
+        ShuffleTiles();        
+        PlaceTilesOnPositions();
 
         // Aquí colocamos las fichas de los jugadores
         for (int playerIndex = 0; playerIndex < players.Count; playerIndex++)
         {
-            PlacePlayerTiles(playerIndex);  // Coloca las 7 fichas para cada jugador
+            PlacePlayerTiles(playerIndex);      // Coloca las 7 fichas para cada jugador
         }
 
     }
@@ -37,12 +37,12 @@ public class BoardGenerator : MonoBehaviour
     public void PlacePlayerTiles(int playerIndex)
     {
 
-        float spacing = .25f;  // Distancia entre las fichas
-        float distanceFromCenter = 1.5f;  // Distancia desde el centro del tablero
-        Vector3 center = transform.position;  // El centro del tablero
+        float spacing = .25f;                   // Distancia entre las fichas
+        float distanceFromCenter = 1.5f;        // Distancia desde el centro del tablero
+        Vector3 center = transform.position;    // El centro del tablero
         center.y += 1f;
 
-        for (int i = 0; i < 7; i++) // 7 fichas por jugador
+        for (int i = 0; i < 7; i++)             // 7 fichas por jugador
         {
             Vector3 position = Vector3.zero;
             Quaternion rotation = Quaternion.identity;
@@ -163,59 +163,47 @@ public class BoardGenerator : MonoBehaviour
 
     }
 
-    public void CreateTileOnPositions()
+    public void CreateTiles()
     {
-        tiles.Clear();
-
-        int tileIndex = 0;
+        tileDataList.Clear();
+        int tileIndex = 0; 
         for (int i = 0; i <= 6; i++)
         {
             for (int j = i; j <= 6; j++)
             {
-                if (tiles.Count >= limitOfTiles) return;
-
-                // Instanciar el GameObject de la ficha
-                GameObject tileObject = Instantiate(tilePrefab, availableSpawnPositionsForTiles[tileIndex], Quaternion.identity);
-                tileObject.name = $"Tile_{i}_{j}";
-
-                // Añadir el componente Tile al GameObject
-                Tile tileComponent = tileObject.AddComponent<Tile>();
-
-                // Inicializar el Tile con los valores i y j
-                tileComponent.SetValues(i, j);
-
-                // Añadir a la lista de tiles
-                tiles.Add(tileComponent);
-                gameObjectsTiles.Add(tileObject);
-
+                if (tileDataList.Count >= limitOfTiles) return;
+                tileDataList.Add(new(i,j));
                 tileIndex++;
             }
         }
-
     }
 
-    public void ShuffleTilePositions()
+    public void PlaceTilesOnPositions()
     {
-        // Crear una lista con las posiciones actuales
-        List<Vector3> originalPositions = new List<Vector3>();
-        foreach (var tile in gameObjectsTiles)
+        tiles.Clear();
+        int tileIndex = 0; 
+        foreach (var tileData in tileDataList)
         {
-            originalPositions.Add(tile.transform.position);
+            // Instanciar el GameObject de la ficha
+            GameObject tileObject = Instantiate(tilePrefab, availableSpawnPositionsForTiles[tileIndex], Quaternion.identity);
+            tileObject.name = $"Tile_{tileData.valueA}_{tileData.valueB}";
+            // Añadir el componente Tile al GameObject
+            Tile tileComponent = tileObject.AddComponent<Tile>();
+            // Inicializar el Tile con los valores i y j
+            tileComponent.SetValues(tileData.valueA, tileData.valueB);
+            // Añadir a la lista de tiles
+            tiles.Add(tileComponent);
+            tileIndex++;
         }
+        
+    }
 
-        // Barajar la lista de posiciones
-        for (int i = 0; i < originalPositions.Count; i++)
+    public void ShuffleTiles()
+    {
+        for (int i = tileDataList.Count - 1; i > 0; i--)
         {
-            int randomIndex = Random.Range(i, originalPositions.Count);
-            Vector3 temp = originalPositions[i];
-            originalPositions[i] = originalPositions[randomIndex];
-            originalPositions[randomIndex] = temp;
-        }
-
-        // Asignar las nuevas posiciones a los GameObjects
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            tiles[i].transform.position = originalPositions[i];
+            int j = Random.Range(0, i + 1);
+            (tileDataList[i], tileDataList[j]) = (tileDataList[j], tileDataList[i]);
         }
     }
 
